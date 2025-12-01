@@ -13,7 +13,7 @@ except ImportError:
     plt = None
 
 #  DATOS COMPLETOS (EQUIPOS ELÉCTRICOS E INDUSTRIALES)
-    ""SE EMPLEA DICCIONARIOS PARA LA EXTRACCIÓN DE DATOS, PARA EQUIPOS PREDETERMINADOS DE ALQUILE""
+    "SE EMPLEA DICCIONARIOS PARA LA EXTRACCIÓN DE DATOS, PARA EQUIPOS PREDETERMINADOS DE ALQUILE"
 EQUIPOS_DATA = {
     "Medición Eléctrica": [
         {"nombre": "Megóhmetro Digital 1 kV", "precioHora": 35, "precioDia": 200},
@@ -577,4 +577,5 @@ if __name__ == "__main__":
     inicializar_sistema()
     state = {"usuario": None, "root": None}
     gui_login(state)
+
 
