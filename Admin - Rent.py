@@ -5,17 +5,15 @@ import datetime
 import os
 from datetime import timedelta
 
-# --- IMPORTACIONES PARA GRÁFICAS ---
+# Importación de graficas para elanalisis de ingresos
 try:
     import matplotlib.pyplot as plt
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 except ImportError:
     plt = None
 
-# =============================================================================
 #  DATOS COMPLETOS (EQUIPOS ELÉCTRICOS E INDUSTRIALES)
-# =============================================================================
-
+    ""SE EMPLEA DICCIONARIOS PARA LA EXTRACCIÓN DE DATOS, PARA EQUIPOS PREDETERMINADOS DE ALQUILE""
 EQUIPOS_DATA = {
     "Medición Eléctrica": [
         {"nombre": "Megóhmetro Digital 1 kV", "precioHora": 35, "precioDia": 200},
@@ -81,7 +79,7 @@ EQUIPOS_DATA = {
 
 CATEGORIAS = list(EQUIPOS_DATA.keys())
 
-# --- CONFIGURACIÓN DE ARCHIVOS ---
+#  CONFIGURACIÓN DE ARCHIVOS 
 CARPETA_ACTUAL = os.path.dirname(os.path.abspath(__file__))
 ARCHIVOS = {
     "inventario": os.path.join(CARPETA_ACTUAL, "inventario.csv"),
@@ -89,12 +87,10 @@ ARCHIVOS = {
     "clientes": os.path.join(CARPETA_ACTUAL, "clientes.csv")
 }
 
-# =============================================================================
 #  CAPA 1: LÓGICA DE DATOS Y NEGOCIO (BACKEND)
-# =============================================================================
 
 def inicializar_sistema():
-    """Crea los archivos CSV necesarios si no existen."""
+    """Crea los archivos CSV, SOLO EN CASOS EN DONDE NO EXISTAN LOS ARCHIVPS"""
     
     # 1. INVENTARIO
     recrear = False
@@ -151,14 +147,14 @@ def reescribir_todo_csv(ruta, filas):
         writer = csv.writer(f)
         writer.writerows(filas)
 
-# --- Lógica de Productos ---
+#  Lógica de Productos 
 def logica_agregar_producto(nombre, categoria, costo_h, costo_d):
     id_unico = f"EQ-{datetime.datetime.now().strftime('%M%S')}"
     fila = [id_unico, nombre, categoria, "Disponible", str(costo_h), str(costo_d), "N/A"]
     escribir_csv(ARCHIVOS["inventario"], [fila], modo='a')
     return id_unico
 
-# --- Lógica de Clientes ---
+#  Lógica de Clientes 
 def logica_obtener_clientes():
     raw = leer_csv(ARCHIVOS["clientes"])
     lista = [r[0] for r in raw if len(r) > 0]
@@ -234,33 +230,30 @@ def logica_devolver_equipo(cliente, id_equipo, fecha_inicio):
         return True
     return False
 
-# =============================================================================
-#  CAPA 2: INTERFAZ DE USUARIO (FRONTEND)
-# =============================================================================
+#   INTERFAZ DE USUARIO (FRONTEND)
 
 def util_centrar(ventana, w, h):
     x = int((ventana.winfo_screenwidth()/2) - (w/2))
     y = int((ventana.winfo_screenheight()/2) - (h/2))
     ventana.geometry(f"{w}x{h}+{x}+{y}")
 
-# --- LOGIN (CON IMAGEN REDIMENSIONADA) ---
+#  Ingreso con pantalla dimensionada
 def gui_login(app_state):
     root = tk.Tk()
     root.title("Admin-Rent v4.0")
     root.configure(bg="#f4f6f7")
     util_centrar(root, 420, 600) # Ventana un poco más alta para que entre todo
 
-    # Intento de Cargar Logo
+    # Se Carga El logo de TECSUP
     try:
         ruta_img = os.path.join(CARPETA_ACTUAL, "logo.png")
         if os.path.exists(ruta_img):
             img_raw = tk.PhotoImage(file=ruta_img)
             
-            # --- AQUÍ ESTÁ EL TRUCO ---
+            # --- Reducción de imagen a tamaño en pantalla ---
             # subsample(x, y) reduce la imagen. 
             # (10, 10) significa que la hace 10 veces más pequeña.
-            # Si sigue muy grande, cambia los 10 por 20.
-            # Si queda muy chica, cambia los 10 por 5.
+        
             img_chica = img_raw.subsample(10, 10) 
             
             lbl_img = tk.Label(root, image=img_chica, bg="#f4f6f7")
@@ -310,7 +303,7 @@ def gui_login(app_state):
     refresh_list()
     root.mainloop()
 
-# --- VENTANA PRINCIPAL USUARIO ---
+# Ventana principal para la interfaz de usuario
 def gui_inventario(app_state):
     win = tk.Toplevel()
     win.title(f"Panel de Usuario - {app_state['usuario']}")
@@ -320,7 +313,7 @@ def gui_inventario(app_state):
     nb = ttk.Notebook(win)
     nb.pack(fill="both", expand=True, padx=10, pady=10)
 
-    # --- TAB 1: CATÁLOGO ---
+    # TAB 1: CATÁLOGO 
     tab_cat = tk.Frame(nb)
     nb.add(tab_cat, text="Catálogo y Reservas")
 
@@ -584,3 +577,4 @@ if __name__ == "__main__":
     inicializar_sistema()
     state = {"usuario": None, "root": None}
     gui_login(state)
+
